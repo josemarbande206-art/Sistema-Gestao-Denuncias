@@ -1,0 +1,201 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f5f7;
+    color: #333;
+    line-height: 1.6;
+}
+
+header {
+    background: #12345a;
+    color: white;
+    text-align: center;
+    padding: 35px 20px;
+}
+
+header h1 {
+    margin-bottom: 10px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 35px;
+    background: white;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.container h2 {
+    margin-bottom: 15px;
+    color: #12345a;
+}
+
+.botoes {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.botao {
+    display: inline-block;
+    background: #12345a;
+    color: white;
+    padding: 12px 22px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.botao:hover {
+    background: #1c527f;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.formulario-container {
+    width: min(90%, 650px);
+    margin: 40px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+.formulario-container h1 {
+    color: #173f35;
+    margin-bottom: 10px;
+}
+
+.formulario-container label {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 7px;
+    font-weight: 600;
+}
+
+.formulario-container input,
+.formulario-container textarea,
+.formulario-container select {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.formulario-container textarea {
+    resize: vertical;
+}
+
+.formulario-container button {
+    width: 100%;
+    margin-top: 24px;
+    padding: 13px;
+    border: none;
+    border-radius: 6px;
+    background: #176b4d;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.formulario-container button:hover {
+    background: #10543c;
+}
+
+.mensagem-sucesso,
+.mensagem-erro {
+    padding: 12px;
+    margin: 18px 0;
+    border-radius: 6px;
+}
+
+.mensagem-sucesso {
+    background: #e3f5e9;
+    color: #175c31;
+}
+
+.mensagem-erro {
+    background: #fde8e8;
+    color: #9b2020;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+.alert-success {
+    background: #d8f3dc;
+    color: #1b4332;
+}
+
+.alert-error {
+    background: #ffe0e0;
+    color: #8b0000;
+}
+
+/* Campo de observação */
+.observacao-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.observacao-container label {
+    display: block;
+    margin-bottom: 8px;
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.observacao-container textarea {
+    display: block;
+    width: 100%;
+    min-height: 130px;
+    box-sizing: border-box;
+    padding: 15px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease,
+                background-color 0.2s ease;
+}
+
+.observacao-container textarea::placeholder {
+    color: #94a3b8;
+}
+
+.observacao-container textarea:focus {
+    border-color: #2563eb;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.observacao-container .observacao-ajuda {
+    display: block;
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 12px;
+}
