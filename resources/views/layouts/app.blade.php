@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>@yield('title', 'Painel de Gestão') | Denúncias</title>
+    <title>@yield('title', 'Painel de Gestão')  Denúncias</title>
 
     <style>
-        :root {
-            --sidebar: #176b57;
-            --sidebar-hover: #105442;
-            --primary: #176b57;
-            --primary-light: #e6f4ef;
-            --background: #f4f6fa;
-            --surface: #ffffff;
-            --text: #1d2939;
-            --muted: #667085;
-            --border: #e4e7ec;
-            --sidebar-width: 260px;
-        }
+       :root {
+    --sidebar: #ffffff;
+    --sidebar-hover: #f5f5f5;
+    --primary: #176b57;
+    --primary-light: #e6f4ef;
+    --background: #f7f8fa;
+    --surface: #ffffff;
+    --text: #202124;
+    --muted: #70757a;
+    --border: #e8eaed;
+    --sidebar-width: 235px;
+  }
 
         * {
             box-sizing: border-box;
@@ -34,107 +34,137 @@
         a {
             text-decoration: none;
         }
+	
 
-        .sidebar {
-            width: var(--sidebar-width);
-            height: 100vh;
-            position: fixed;
-            inset: 0 auto 0 0;
-            background: var(--sidebar);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            z-index: 1000;
-            transition: transform .25s ease;
-        }
+	.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: #ffffff;
+    color: #202124;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    overflow: hidden;
+    border-right: 1px solid #e8eaed;
+    box-shadow: 2px 0 12px rgba(0,0,0,.04);
+}
 
-        .brand {
-            padding: 25px 20px;
-            border-bottom: 1px solid rgba(255,255,255,.10);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+.sidebar.open {
+    transform: translateX(0);
+}
 
-        .brand-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            background: #d8f3e9;
-            color: #176b57;
-            display: grid;
-            place-items: center;
-            font-size: 23px;
-            font-weight: 800;
-        }
+     .brand {
+    padding: 22px 18px;
+    border-bottom: 1px solid #eeeeee;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-        .brand h2 {
-            font-size: 14px;
-            margin: 0 0 5px;
-            line-height: 1.4;
-        }
+.brand-icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: #176b57;
+    color: #ffffff;
+    display: grid;
+    place-items: center;
+    font-size: 19px;
+    font-weight: 800;
+}
 
-        .brand p {
-            margin: 0;
-            color: #d0e4dc;
-            font-size: 11px;
-        }
+.brand h2 {
+    color: #202124;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .4px;
+    margin: 0 0 4px;
+}
 
-        .menu {
-            padding: 15px 12px;
-            flex: 1;
-        }
+.brand p {
+    color: #777777;
+    margin: 0;
+    font-size: 10px;
+}
 
-        .menu-heading {
-            color: #c1d9d0;
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 1.3px;
-            padding: 18px 12px 8px;
-        }
 
-        .menu-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 11px 12px;
-            margin: 3px 0;
-            border-radius: 7px;
-            color: #e4eee9;
-            font-size: 13px;
-            transition: .2s;
-        }
 
-        .menu-link:hover {
-            background: var(--sidebar-hover);
-            color: white;
-        }
+   .menu {
+    padding: 12px 10px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
 
-        .menu-link.active {
-            background: #ffffff;
-            color: var(--primary);
-            font-weight: 700;
-        }
+.menu-heading {
+    color: #888888;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 18px 12px 8px;
+}
 
-        .menu-icon {
-            width: 20px;
-            text-align: center;
-            font-size: 16px;
-        }
+.menu-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 13px;
+    margin: 3px 0;
+    border-radius: 7px;
+    border-left: 3px solid transparent;
+    color: #333333;
+    font-size: 13px;
+    font-weight: 500;
+    transition: .2s ease;
+}
 
-        .sidebar-footer {
-            border-top: 1px solid rgba(255,255,255,.10);
-            padding: 16px;
-            color: #d0e4dc;
-            font-size: 11px;
-            line-height: 1.7;
-        }
+.menu-link:hover {
+    background: #f5f5f5;
+    color: #176b57;
+}
+
+.menu-link.active {
+    background: #eaf4f0;
+    color: #176b57;
+    border-left-color: #176b57;
+    font-weight: 700;
+}
+
+.menu-icon {
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
+    color: #666666;
+}
+
+.menu-link.active .menu-icon {
+    color: #176b57;
+}
+
+
+
+   .sidebar-footer {
+    border-top: 1px solid #eeeeee;
+    padding: 14px 15px;
+    color: #777777;
+    font-size: 10px;
+    line-height: 1.6;
+    text-align: center;
+    flex-shrink: 0;
+}
 
         .main {
-            margin-left: var(--sidebar-width);
-            min-height: 100vh;
-        }
+        margin-left: 0;
+        min-height: 100vh;
+        width: 100%;
+        transition: margin-left .3s ease;
+    }
 
         .topbar {
             height: 76px;
@@ -265,7 +295,81 @@
             background: var(--sidebar-hover);
             color: white;
         }
+        .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 15px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: white;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+}
 
+.sidebar-actions {
+    padding: 12px;
+    border-top: 1px solid #eeeeee;
+    flex-shrink: 0;
+}
+
+.sidebar-actions form {
+    margin: 0;
+}
+
+.sidebar-action {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 11px 13px;
+    margin-bottom: 5px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.sidebar-action span {
+    width: 20px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.home-action {
+    color: #333333;
+    background: #f5f5f5;
+    border: 1px solid #eeeeee;
+}
+
+.home-action:hover {
+    background: #eaf4f0;
+    color: #176b57;
+}
+
+.logout-action {
+    color: #d93025;
+    background: #ffffff;
+    border: 1px solid #eeeeee;
+}
+
+.logout-action:hover {
+    background: #fff1f0;
+}
+
+
+.back-button:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+}
         .alert {
             padding: 14px 16px;
             border-radius: 8px;
@@ -284,23 +388,58 @@
         }
 
         .mobile-toggle {
-            display: none;
-            border: 1px solid var(--border);
-            background: white;
-            border-radius: 7px;
-            padding: 8px 11px;
-            cursor: pointer;
-            font-size: 18px;
-        }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--primary);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 21px;
+    transition: .2s;
+}
 
+.mobile-toggle:hover {
+    background: var(--primary-light);
+}
         .sidebar-overlay {
-            display: none;
-        }
+    display: none;
+}
 
+.sidebar-overlay.open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .40);
+    z-index: 900;
+}
         @media (max-width: 900px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
+    .topbar {
+        padding: 0 16px;
+    }
+
+    .content {
+        padding: 20px 16px;
+    }
+
+    .topbar h1 {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 520px) {
+    .status-indicator {
+        display: none;
+    }
+
+    .page-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
 
             .sidebar.open {
                 transform: translateX(0);
@@ -360,8 +499,11 @@
             <h2>GESTÃO DE DENÚNCIAS</h2>
             <p>Proteção dos bens públicos</p>
         </div>
+       
     </div>
-
+     <button type="button" class="back-button" onclick="voltarPagina()">
+    ← Voltar
+</button>
     <nav class="menu">
 
         @auth
@@ -491,7 +633,11 @@
             @else
 
                 <div class="menu-heading">ÁREA DO CIDADÃO</div>
-
+		<a href="{{ route('denuncias.index') }}"
+   class="menu-link {{ request()->routeIs('denuncias.index') ? 'active' : '' }}">
+    <span class="menu-icon">▤</span>
+    Minhas Denúncias
+</a>
                 <a href="{{ route('denuncias.create') }}"
                    class="menu-link {{ request()->routeIs('denuncias.create') ? 'active' : '' }}">
                     <span class="menu-icon">＋</span>
@@ -510,11 +656,27 @@
 
     </nav>
 
-    <div class="sidebar-footer">
-        Sistema de Gestão de Denúncias<br>
-        Proteção e conservação dos bens públicos
+       </nav>
+
+    <div class="sidebar-actions">
+
+        <a href="{{ url('/') }}" class="sidebar-action home-action">
+            <span>⌂</span>
+            Página inicial
+        </a>
+
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+
+            <button type="submit" class="sidebar-action logout-action">
+                <span>↪</span>
+                Terminar sessão
+            </button>
+        </form>
+
     </div>
 
+    <div class="sidebar-footer">
 </aside>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -594,19 +756,43 @@
     const overlay = document.getElementById('sidebarOverlay');
     const toggle = document.getElementById('mobileToggle');
 
+    function abrirSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('open');
+        toggle.setAttribute('aria-expanded', 'true');
+    }
+
     function closeSidebar() {
         sidebar.classList.remove('open');
         overlay.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
     }
 
-    toggle?.addEventListener('click', function () {
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('open');
+    toggle.addEventListener('click', function () {
+        if (sidebar.classList.contains('open')) {
+            closeSidebar();
+        } else {
+            abrirSidebar();
+        }
     });
 
     overlay.addEventListener('click', closeSidebar);
-</script>
 
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeSidebar();
+        }
+    });
+
+    function voltarPagina() {
+        if (document.referrer &&
+            new URL(document.referrer).origin === window.location.origin) {
+            window.history.back();
+        } else {
+            window.location.href = "{{ url('/') }}";
+        }
+    }
+</script>
 @stack('scripts')
 
 </body>

@@ -1,4 +1,6 @@
 <?php
+use App\Http\Controllers\RelatorioController;
+use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EvidenciaController;
 use App\Http\Controllers\LocalizacaoController;
@@ -39,7 +41,6 @@ Route::post('/logout', [AuthController::class, 'logout'])
 | Dashboard
 |--------------------------------------------------------------------------
 */
-
 Route::get('/dashboard', function () {
 
     $total = DB::table('ocorrencias')->count();
@@ -83,6 +84,14 @@ Route::get('/dashboard', function () {
         ->limit(5)
         ->get();
 
+    $distribuicao = [
+        ['nome' => 'Pendentes', 'quantidade' => $pendentes],
+        ['nome' => 'Em análise', 'quantidade' => $emAnalise],
+        ['nome' => 'Confirmadas', 'quantidade' => $confirmadas],
+        ['nome' => 'Resolvidas', 'quantidade' => $resolvidas],
+        ['nome' => 'Rejeitadas', 'quantidade' => $rejeitadas],
+    ];
+
     return view('dashboard', compact(
         'total',
         'pendentes',
@@ -90,10 +99,29 @@ Route::get('/dashboard', function () {
         'confirmadas',
         'resolvidas',
         'rejeitadas',
-        'recentes'
+        'recentes',
+        'distribuicao'
     ));
+
 })->middleware(['auth', 'perfil:administrador'])
   ->name('dashboard');
+
+
+  /*
+|--------------------------------------------------------------------------
+| Autenticação com Google
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/auth/google/redirect', [
+    GoogleAuthController::class,
+    'redirect'
+])->name('google.redirect');
+
+Route::get('/auth/google/callback', [
+    GoogleAuthController::class,
+    'callback'
+])->name('google.callback');
 
 /*
 |--------------------------------------------------------------------------
@@ -115,9 +143,15 @@ Route::get('/denuncias', [
     DenunciaController::class,
     'index'
 ])
-->middleware(['auth', 'perfil:administrador,operador'])
+->middleware(['auth', 'perfil:administrador,operador,cidadao'])
 ->name('denuncias.index');
-
+Route::delete('/denuncias/{id}', [
+    DenunciaController::class,
+    'destroy'
+])
+->whereNumber('id')
+->middleware(['auth', 'perfil:administrador,operador'])
+->name('denuncias.destroy');
 /*
 |--------------------------------------------------------------------------
 | Gestão de denúncias pelo operador
@@ -198,11 +232,6 @@ $modulos = [
         'nome' => 'Histórico de denúncias',
     ],
 
-    'relatorios' => [
-        'uri' => '/relatorios',
-        'nome' => 'Relatórios e estatísticas',
-    ],
-
     'utilizadores' => [
         'uri' => '/utilizadores',
         'nome' => 'Gestão de utilizadores',
@@ -243,6 +272,28 @@ foreach ($modulos as $slug => $modulo) {
       ->name($slug . '.index');
 
 }
+/*
+|--------------------------------------------------------------------------
+| Relatórios e estatísticas
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'perfil:administrador,operador'])->group(function () {
+
+    Route::get('/relatorios', [RelatorioController::class, 'index'])
+        ->name('relatorios.index');
+
+    Route::get('/relatorios/exportar-pdf', [RelatorioController::class, 'exportarPDF'])
+        ->name('relatorios.pdf');
+
+});
+
+Route::middleware(['auth', 'perfil:administrador,operador'])->group(function () {
+
+    Route::get('/relatorios', [RelatorioController::class, 'index'])
+        ->name('relatorios.index');
+
+});
+
 /*
 |--------------------------------------------------------------------------
 | Gestão de categorias

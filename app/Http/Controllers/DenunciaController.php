@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\Ocorrencia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,9 +35,11 @@ class DenunciaController extends Controller
         'localizacoes'
     ));
 }
-    public function index()
+    public function index(Request $request)
 {
-    $denuncias = DB::table('ocorrencias')
+    $utilizador = Auth::user();
+
+    $consulta = DB::table('ocorrencias')
         ->leftJoin(
             'categorias',
             'ocorrencias.categoria_id',
@@ -48,20 +51,60 @@ class DenunciaController extends Controller
             'ocorrencias.codigo',
             'ocorrencias.titulo',
             'ocorrencias.data_ocorrencia',
+            'ocorrencias.data_registo',
             'ocorrencias.estado',
             'categorias.nome as categoria'
-        )
+        );
+
+    // O cidadão só pode consultar as denúncias que registou.
+    if ($utilizador->perfil === 'cidadao') {
+        $consulta->where(
+            'ocorrencias.utilizador_id',
+            $utilizador->id
+        );
+    }
+
+    // Pesquisa por código ou título.
+    if ($request->filled('pesquisa')) {
+        $pesquisa = trim($request->input('pesquisa'));
+
+        $consulta->where(function ($query) use ($pesquisa) {
+            $query->where(
+                'ocorrencias.codigo',
+                'like',
+                "%{$pesquisa}%"
+            )->orWhere(
+                'ocorrencias.titulo',
+                'like',
+                "%{$pesquisa}%"
+            );
+        });
+    }
+
+    // Filtro por estado.
+    if ($request->filled('estado')) {
+        $consulta->where(
+            'ocorrencias.estado',
+            $request->input('estado')
+        );
+    }
+
+    $denuncias = $consulta
         ->orderByDesc('ocorrencias.id')
-        ->get();
+        ->paginate(10)
+        ->withQueryString();
 
     return view('denuncias.index', compact('denuncias'));
-
-
-    }
+}
+    
+    
 
     /**
      * Guardar uma nova denúncia.
      */
+
+
+	
     public function store(Request $request)
     {
         $dados = $request->validate([
@@ -127,8 +170,10 @@ class DenunciaController extends Controller
                     'descricao' => $dados['descricao'],
                     'data_ocorrencia' => $dados['data_ocorrencia'],
                     'estado' => 'pendente',
-                    'utilizador_id' => null,
-                    'operador_id' => null,
+                   'utilizador_id' => Auth::check() && Auth::user()->perfil === 'cidadao'
+		    ? Auth::id()
+   			 : null,
+		'operador_id' => null,
                     'categoria_id' => $dados['categoria_id'],
                     'bem_publico_id' => $dados['bem_publico_id'] ?? null,
                     'localizacao_id' => $dados['localizacao_id'],
@@ -184,5 +229,34 @@ class DenunciaController extends Controller
                     'Não foi possível registar a denúncia. Verifique os dados e tente novamente.'
                 );
         }
+
+    }
+
+	    /**
+     * Eliminar uma denúncia individualmente.
+     */
+    public function destroy($id)
+    {
+        $ocorrencia = Ocorrencia::findOrFail($id);
+
+        // Obter os caminhos das evidências antes da eliminação.
+        $ficheiros = DB::table('evidencias')
+            ->where('ocorrencia_id', $ocorrencia->id)
+            ->pluck('caminho_arquivo');
+
+        // Eliminar a denúncia.
+        // As evidências na base de dados são eliminadas em cascata.
+        $ocorrencia->delete();
+
+        // Eliminar os ficheiros físicos das evidências.
+        foreach ($ficheiros as $caminho) {
+            if ($caminho) {
+                Storage::disk('public')->delete($caminho);
+            }
+        }
+
+        return redirect()
+            ->route('denuncias.index')
+            ->with('success', 'Denúncia eliminada com sucesso!');
     }
 }

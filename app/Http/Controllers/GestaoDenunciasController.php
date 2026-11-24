@@ -15,6 +15,11 @@ class GestaoDenunciasController extends Controller
     {
         $request->validate([
             'pesquisa' => ['nullable', 'string', 'max:150'],
+	'categoria_id' => [
+    'nullable',
+    'integer',
+    'exists:categorias,id',
+],
             'estado' => [
                 'nullable',
                 Rule::in([
@@ -67,6 +72,13 @@ class GestaoDenunciasController extends Controller
             );
         }
 
+	if ($request->filled('categoria_id')) {
+    $consulta->where(
+        'ocorrencias.categoria_id',
+        $request->input('categoria_id')
+    );
+}
+
         $denuncias = $consulta
             ->orderByDesc('ocorrencias.id')
             ->paginate(10)
@@ -87,10 +99,13 @@ class GestaoDenunciasController extends Controller
                 ->where('estado', 'resolvida')
                 ->count(),
         ];
-
+	
+$categorias = DB::table('categorias')
+    ->orderBy('nome')
+    ->get();
         return view(
             'gestao.denuncias.index',
-            compact('denuncias', 'estatisticas')
+            compact('denuncias', 'estatisticas', 'categorias')
         );
     }
 

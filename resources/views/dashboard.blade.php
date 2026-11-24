@@ -1,296 +1,686 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
-@section('page-title', 'Dashboard')
+@section('title', 'Painel Administrativo')
+@section('page-title', 'Painel Administrativo')
 @section('breadcrumb', 'Visão geral')
 
 @section('content')
 
-<div class="page-heading">
-    <div>
-        <h2>Visão geral do sistema</h2>
-        <p>
-            Acompanhe as denúncias de vandalização e o estado
-            das ocorrências registadas.
-        </p>
-    </div>
+@php
+    $estados = [
+        [
+            'nome' => 'Pendentes',
+            'valor' => $pendentes,
+            'cor' => '#c69b32',
+            'classe' => 'pending'
+        ],
+        [
+            'nome' => 'Em análise',
+            'valor' => $emAnalise,
+            'cor' => '#718b7d',
+            'classe' => 'analysis'
+        ],
+        [
+            'nome' => 'Confirmadas',
+            'valor' => $confirmadas,
+            'cor' => '#47856a',
+            'classe' => 'confirmed'
+        ],
+        [
+            'nome' => 'Resolvidas',
+            'valor' => $resolvidas,
+            'cor' => '#176b57',
+            'classe' => 'resolved'
+        ],
+        [
+            'nome' => 'Rejeitadas',
+            'valor' => $rejeitadas,
+            'cor' => '#9b665d',
+            'classe' => 'rejected'
+        ],
+    ];
+@endphp
 
-    <a href="{{ route('denuncias.create') }}" class="button">
-        + Nova denúncia
-    </a>
-</div>
+<div class="dashboard-container">
 
-<div class="dashboard-grid">
-
-    <div class="stat-card">
-        <div class="stat-label">Total de denúncias</div>
-        <div class="stat-number">{{ $total }}</div>
-        <div class="stat-description">Registos no sistema</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-label">Pendentes</div>
-        <div class="stat-number">{{ $pendentes }}</div>
-        <div class="stat-description">Aguardam análise</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-label">Em análise</div>
-        <div class="stat-number">{{ $emAnalise }}</div>
-        <div class="stat-description">Em verificação</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-label">Confirmadas</div>
-        <div class="stat-number">{{ $confirmadas }}</div>
-        <div class="stat-description">Ocorrências confirmadas</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-label">Resolvidas</div>
-        <div class="stat-number">{{ $resolvidas }}</div>
-        <div class="stat-description">Tratamento concluído</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-label">Rejeitadas</div>
-        <div class="stat-number">{{ $rejeitadas }}</div>
-        <div class="stat-description">Não aceites após análise</div>
-    </div>
-
-</div>
-
-<div class="dashboard-panel">
-
-    <div class="panel-header">
+    {{-- CABEÇALHO --}}
+    <div class="dashboard-header">
         <div>
-            <h3>Denúncias recentes</h3>
-            <p>Últimas ocorrências registadas no sistema.</p>
+            <h2>Painel Administrativo</h2>
+            <p>Acompanhamento geral das denúncias de vandalização de bens públicos.</p>
         </div>
 
-        <a href="{{ route('denuncias.index') }}" class="panel-link">
-            Ver todas →
-        </a>
+        <div class="dashboard-date">
+            <span>DATA ACTUAL</span>
+            <strong>{{ now()->translatedFormat('d/m/Y') }}</strong>
+        </div>
     </div>
 
-    <div class="table-wrapper">
-        <table class="dashboard-table">
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Título</th>
-                    <th>Categoria</th>
-                    <th>Data de registo</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
+    {{-- INDICADORES --}}
+    <section class="dashboard-section">
 
-            <tbody>
-                @forelse($recentes as $denuncia)
-                    <tr>
-                        <td class="code-cell">
-                            {{ $denuncia->codigo }}
-                        </td>
+        <div class="section-title">
+            <div>
+                <h3>Indicadores gerais</h3>
+                <p>Estado actual das ocorrências registadas no sistema.</p>
+            </div>
+        </div>
 
-                        <td>{{ $denuncia->titulo }}</td>
+        <div class="stats-grid">
 
-                        <td>
-                            {{ $denuncia->categoria ?? 'Não definida' }}
-                        </td>
+            <div class="stat-card total">
+                <div class="stat-card-header">
+                    <span>Total de denúncias</span>
+                    <span class="stat-symbol">T</span>
+                </div>
+                <strong>{{ $total }}</strong>
+                <small>Registos existentes</small>
+            </div>
 
-                        <td>
-                            {{ $denuncia->data_registo ?? 'Não disponível' }}
-                        </td>
+            <div class="stat-card pending">
+                <div class="stat-card-header">
+                    <span>Pendentes</span>
+                    <span class="stat-symbol">P</span>
+                </div>
+                <strong>{{ $pendentes }}</strong>
+                <small>Aguardam análise</small>
+            </div>
 
-                        <td>
-                            <span class="state-badge state-{{ $denuncia->estado }}">
-                                {{ ucfirst(str_replace('_', ' ', $denuncia->estado)) }}
-                            </span>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="empty-state">
-                            Ainda não existem denúncias registadas.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+            <div class="stat-card analysis">
+                <div class="stat-card-header">
+                    <span>Em análise</span>
+                    <span class="stat-symbol">A</span>
+                </div>
+                <strong>{{ $emAnalise }}</strong>
+                <small>Em verificação</small>
+            </div>
+
+            <div class="stat-card confirmed">
+                <div class="stat-card-header">
+                    <span>Confirmadas</span>
+                    <span class="stat-symbol">C</span>
+                </div>
+                <strong>{{ $confirmadas }}</strong>
+                <small>Ocorrências confirmadas</small>
+            </div>
+
+            <div class="stat-card resolved">
+                <div class="stat-card-header">
+                    <span>Resolvidas</span>
+                    <span class="stat-symbol">R</span>
+                </div>
+                <strong>{{ $resolvidas }}</strong>
+                <small>Tratamento concluído</small>
+            </div>
+
+            <div class="stat-card rejected">
+                <div class="stat-card-header">
+                    <span>Rejeitadas</span>
+                    <span class="stat-symbol">X</span>
+                </div>
+                <strong>{{ $rejeitadas }}</strong>
+                <small>Não aceites após análise</small>
+            </div>
+
+        </div>
+    </section>
+
+    {{-- DISTRIBUIÇÃO ESTATÍSTICA --}}
+ 	{{-- GRÁFICOS ESTATÍSTICOS --}}
+<section class="dashboard-section">
+
+    <div class="section-title">
+        <div>
+            <h3>Análise estatística das denúncias</h3>
+            <p>Visualização gráfica das ocorrências por estado de tratamento.</p>
+        </div>
     </div>
 
+    @if($total > 0)
+
+        <div class="real-charts-grid">
+
+            {{-- GRÁFICO CIRCULAR --}}
+            <div class="real-chart-card">
+                <div class="real-chart-header">
+                    <h4>Distribuição por estado</h4>
+                    <p>Percentagem de denúncias em cada estado.</p>
+                </div>
+
+                <div class="real-chart-container">
+                    <canvas id="graficoCircular"></canvas>
+                </div>
+            </div>
+
+            {{-- GRÁFICO DE BARRAS --}}
+            <div class="real-chart-card">
+                <div class="real-chart-header">
+                    <h4>Quantidade por estado</h4>
+                    <p>Comparação do número de denúncias registadas.</p>
+                </div>
+
+                <div class="real-chart-container">
+                    <canvas id="graficoBarras"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    @else
+
+        <div class="real-chart-card real-chart-empty">
+            Ainda não existem denúncias registadas para apresentar gráficos.
+        </div>
+
+    @endif
+
+</section> 
 </div>
 
 @endsection
 
 @push('styles')
 <style>
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 18px;
-        margin-bottom: 26px;
+    .dashboard-container {
+        width: 100%;
+        color: #263b30;
     }
 
-    .stat-card {
-        background: white;
-        border: 1px solid #e4e7ec;
-        border-radius: 12px;
-        padding: 22px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .stat-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        background: #176b57;
-    }
-
-    .stat-label {
-        color: #667085;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .stat-number {
-        font-size: 32px;
-        font-weight: 800;
-        margin: 14px 0 8px;
-        color: #17243a;
-    }
-
-    .stat-description {
-        color: #667085;
-        font-size: 11px;
-    }
-
-    .dashboard-panel {
-        background: white;
-        border: 1px solid #e4e7ec;
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .panel-header {
-        padding: 22px;
+    .dashboard-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 15px;
-        border-bottom: 1px solid #e4e7ec;
+        gap: 20px;
+        margin-bottom: 28px;
     }
 
-    .panel-header h3 {
+    .dashboard-header h2 {
         margin: 0 0 7px;
-        font-size: 16px;
+        color: #173b2d;
+        font-size: 23px;
+        font-weight: 750;
     }
 
-    .panel-header p {
+    .dashboard-header p {
         margin: 0;
-        color: #667085;
+        color: #78847c;
+        font-size: 13px;
+    }
+
+    .dashboard-date {
+        min-width: 130px;
+        padding: 13px 16px;
+        background: #fff;
+        border: 1px solid #e5ebe6;
+        border-radius: 8px;
+    }
+
+    .dashboard-date span {
+        display: block;
+        margin-bottom: 6px;
+        color: #89938d;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: .8px;
+    }
+
+    .dashboard-date strong {
+        color: #176b57;
+        font-size: 15px;
+    }
+
+    .dashboard-section {
+        margin-bottom: 28px;
+    }
+
+    .section-title {
+        margin-bottom: 17px;
+    }
+
+    .section-title h3 {
+        margin: 0 0 5px;
+        color: #173b2d;
+        font-size: 16px;
+        font-weight: 750;
+    }
+
+    .section-title p {
+        margin: 0;
+        color: #89938d;
         font-size: 12px;
     }
 
-    .panel-link {
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .stat-card {
+        min-width: 0;
+        padding: 20px;
+        background: #fff;
+        border: 1px solid #e6ebe7;
+        border-left: 4px solid #176b57;
+        border-radius: 9px;
+        transition: transform .2s, box-shadow .2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(23, 59, 45, .07);
+    }
+
+    .stat-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        color: #64736a;
+        font-size: 12px;
+        font-weight: 650;
+    }
+
+    .stat-symbol {
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 7px;
+        background: #edf4ef;
         color: #176b57;
         font-size: 12px;
-        font-weight: 700;
-        white-space: nowrap;
+        font-weight: 800;
     }
 
-    .table-wrapper {
-        width: 100%;
-        overflow-x: auto;
+    .stat-card > strong {
+        display: block;
+        margin: 17px 0 6px;
+        color: #173b2d;
+        font-size: 31px;
+        font-weight: 800;
+        line-height: 1.1;
     }
 
-    .dashboard-table {
-        width: 100%;
-        border-collapse: collapse;
+    .stat-card small {
+        color: #89938d;
+        font-size: 11px;
+    }
+
+    .stat-card.total {
+        border-left-color: #173b2d;
+    }
+
+    .stat-card.pending {
+        border-left-color: #c69b32;
+    }
+
+    .stat-card.analysis {
+        border-left-color: #718b7d;
+    }
+
+    .stat-card.confirmed {
+        border-left-color: #47856a;
+    }
+
+    .stat-card.resolved {
+        border-left-color: #176b57;
+    }
+
+    .stat-card.rejected {
+        border-left-color: #9b665d;
+    }
+
+    .chart-card {
+        padding: 24px;
+        background: #fff;
+        border: 1px solid #e6ebe7;
+        border-radius: 10px;
+    }
+
+    .chart-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 18px;
+        margin-bottom: 22px;
+        border-bottom: 1px solid #edf0ed;
+    }
+
+    .chart-summary span {
+        color: #64736a;
         font-size: 12px;
+        font-weight: 650;
     }
 
-    .dashboard-table th {
-        text-align: left;
-        padding: 14px 18px;
-        background: #f8fafc;
-        color: #667085;
-        font-size: 10px;
-        text-transform: uppercase;
-        letter-spacing: .5px;
-        white-space: nowrap;
-    }
-
-    .dashboard-table td {
-        padding: 16px 18px;
-        border-top: 1px solid #eef0f4;
-        white-space: nowrap;
-    }
-
-    .code-cell {
+    .chart-summary strong {
         color: #176b57;
-        font-weight: 700;
+        font-size: 22px;
+        font-weight: 800;
     }
 
-    .state-badge {
-        display: inline-block;
+    .chart-content {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .chart-row {
+        display: grid;
+        grid-template-columns: 125px minmax(80px, 1fr) 95px;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .chart-label {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: #52645a;
+        font-size: 12px;
+        font-weight: 650;
+    }
+
+    .chart-dot {
+        width: 9px;
+        height: 9px;
+        flex-shrink: 0;
+        border-radius: 50%;
+    }
+
+    .chart-track {
+        width: 100%;
+        height: 10px;
+        overflow: hidden;
+        background: #edf1ed;
         border-radius: 20px;
-        padding: 6px 9px;
+    }
+
+    .chart-bar {
+        height: 100%;
+        min-width: 0;
+        border-radius: 20px;
+        transition: width .5s ease;
+    }
+
+    .chart-value {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .chart-value strong {
+        color: #263b30;
+        font-size: 13px;
+    }
+
+    .chart-value span {
+        min-width: 48px;
+        color: #89938d;
         font-size: 10px;
-        font-weight: 700;
-        background: #eef2f6;
-        color: #344054;
+        text-align: right;
     }
 
-    .state-pendente {
-        background: #fff2cc;
-        color: #855b00;
-    }
-
-    .state-em_analise {
-        background: #dbeafe;
-        color: #1d4ed8;
-    }
-
-    .state-confirmada {
-        background: #d1fae5;
-        color: #065f46;
-    }
-
-    .state-resolvida {
-        background: #dcfce7;
-        color: #166534;
-    }
-
-    .state-rejeitada {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-
-    .empty-state {
-        padding: 30px !important;
+    .chart-empty {
+        padding: 25px 10px;
+        color: #89938d;
+        font-size: 12px;
         text-align: center;
-        color: #667085;
     }
 
-    @media (max-width: 1100px) {
-        .dashboard-grid {
+    @media (max-width: 900px) {
+        .stats-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
 
-    @media (max-width: 520px) {
-        .dashboard-grid {
+    @media (max-width: 600px) {
+        .dashboard-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .dashboard-date {
+            width: 100%;
+        }
+
+        .stats-grid {
             grid-template-columns: 1fr;
         }
 
-        .panel-header {
-            align-items: flex-start;
+        .chart-card {
+            padding: 17px;
+        }
+
+        .chart-row {
+            grid-template-columns: 100px minmax(50px, 1fr) 75px;
+            gap: 9px;
+        }
+
+        .chart-label {
+            font-size: 10px;
+        }
+
+        .chart-value {
+            gap: 5px;
+        }
+
+        .chart-value span {
+            min-width: 39px;
+            font-size: 9px;
         }
     }
 </style>
+@endpush
+
+
+@push('styles')
+<style>
+    .real-charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .real-chart-card {
+        background: #fff;
+        border: 1px solid #e5ebe6;
+        border-radius: 10px;
+        padding: 22px;
+        min-width: 0;
+    }
+
+    .real-chart-header {
+        margin-bottom: 20px;
+    }
+
+    .real-chart-header h4 {
+        margin: 0 0 6px;
+        color: #173b2d;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .real-chart-header p {
+        margin: 0;
+        color: #89938d;
+        font-size: 12px;
+    }
+
+    .real-chart-container {
+        position: relative;
+        width: 100%;
+        height: 300px;
+    }
+
+    .real-chart-empty {
+        padding: 35px;
+        text-align: center;
+        color: #89938d;
+        font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+        .real-charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+@endpush
+
+@push('scripts')
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const estados = [
+        'Pendentes',
+        'Em análise',
+        'Confirmadas',
+        'Resolvidas',
+        'Rejeitadas'
+    ];
+
+    const quantidades = [
+    {{ $pendentes }},
+    {{ $emAnalise }},
+    {{ $confirmadas }},
+    {{ $resolvidas }},
+    {{ $rejeitadas }}
+];
+
+    const cores = [
+        '#c69b32',
+        '#718b7d',
+        '#47856a',
+        '#176b57',
+        '#9b665d'
+    ];
+
+    // GRÁFICO CIRCULAR
+
+    const circular = document.getElementById('graficoCircular');
+
+    if (circular) {
+        new Chart(circular, {
+            type: 'doughnut',
+
+            data: {
+                labels: estados,
+
+                datasets: [{
+                    data: quantidades,
+                    backgroundColor: cores,
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 8
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+
+                        labels: {
+                            padding: 18,
+                            usePointStyle: true,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = quantidades.reduce(
+                                    (a, b) => a + b, 0
+                                );
+
+                                const valor = context.raw;
+                                const percentagem = total > 0
+                                    ? (valor / total * 100).toFixed(1)
+                                    : 0;
+
+                                return valor + ' denúncias (' +
+                                    percentagem + '%)';
+                            }
+                        }
+                    }
+                },
+
+                cutout: '65%'
+            }
+        });
+    }
+
+    // GRÁFICO DE BARRAS
+
+    const barras = document.getElementById('graficoBarras');
+
+    if (barras) {
+        new Chart(barras, {
+            type: 'bar',
+
+            data: {
+                labels: estados,
+
+                datasets: [{
+                    label: 'Número de denúncias',
+                    data: quantidades,
+                    backgroundColor: cores,
+                    borderRadius: 6,
+                    maxBarThickness: 45
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            precision: 0
+                        },
+
+                        grid: {
+                            color: '#edf1ee'
+                        }
+                    },
+
+                    x: {
+                        grid: {
+                            display: false
+                        },
+
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+});
+</script>
+
 @endpush

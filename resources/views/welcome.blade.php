@@ -78,11 +78,34 @@ nav a:hover {
 }
 
 .login-button {
+    display: inline-block;
     background: var(--dourado);
     color: var(--verde-escuro);
     padding: 10px 18px;
     border-radius: 5px;
     font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.login-button:hover {
+    background: #e7bd50;
+}
+
+.logout-button {
+    display: inline-block;
+    background: transparent;
+    color: white;
+    padding: 10px 18px;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background: #ffffff;
+    color: #123b2a;
 }
 
 .login-button:hover {
@@ -366,28 +389,34 @@ nav a:hover {
             GESTÃO DE DENÚNCIAS
         </div>
 
-        <nav>
-            <a href="/">Início</a>
+       <nav>
+    <a href="/">Início</a>
 
-            <a href="{{ route('denuncias.create') }}">
-                Registar Denúncia
-            </a>
+    <a href="{{ route('denuncias.create') }}">
+        Registar Denúncia
+    </a>
 
-            <a href="{{ url('/acompanhamento') }}">
-                Acompanhar Denúncia
-            </a>
+    <a href="{{ url('/acompanhamento') }}">
+        Acompanhar Denúncia
+    </a>
 
-            @auth
-    <a href="{{ url('/dashboard') }}">Aceder ao Painel</a>
+    @auth
+        <a href="{{ Auth::user()->perfil === 'administrador' ? route('dashboard') : (Auth::user()->perfil === 'operador' ? route('gestao.denuncias.index') : route('acompanhamento.index')) }}">
+            Aceder ao Painel
+        </a>
 
-    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-        @csrf
-        <button type="submit">Terminar Sessão</button>
-    </form>
-@else
-    <a href="{{ route('login') }}">Iniciar Sessão</a>
-@endauth
-        </nav>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="logout-button">
+                Terminar Sessão
+            </button>
+        </form>
+    @else
+        <a href="{{ route('login') }}" class="login-button">
+            Iniciar Sessão
+        </a>
+    @endauth
+</nav>
     </header>
 
     <!-- APRESENTAÇÃO PRINCIPAL -->
